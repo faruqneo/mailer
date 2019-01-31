@@ -36,16 +36,12 @@ app.post('/send',function(req, res){
      //console.log(process.env.PASS)
 
     let transporter = nodemailer.createTransport({
-        port: 465,
-        secure: true,
+
         service: 'Gmail',
-        host: "smtp.gmail.com",
         auth: {
-          type: 'OAuth2',
           user: process.env.EMAIL,
-          clientId: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET
-        },tls: { rejectUnauthorized: false }
+          pass: process.env.PASS
+        }
       });
 
       let mailOptions = {
@@ -54,9 +50,7 @@ app.post('/send',function(req, res){
         subject: "Hello ✔", 
         text: "Hello world?", 
         html: output,
-        auth:{
-            user: process.env.EMAIL
-        }
+        
       };
 
       transporter.sendMail(mailOptions, function(error, info){
@@ -71,3 +65,40 @@ app.post('/send',function(req, res){
 app.listen(3000, function(){
     console.log("server is running")
 });
+
+
+let sendEmail = () => {
+    let gmailTransporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.PASS
+        }
+    });
+
+ 
+    //return;
+    let mailOptions = {
+        from: '"faruq.cvrp@gmail.com" <Faruq>', // sender address
+        to: 'raj@marmeto.com', // list of receivers
+        subject: 'Return request approved', // Subject line
+        text: 'Your Return Request Is Approved', // plain text body
+        html: '<b>Return Request Approved.</b>' // html body
+    };
+
+    return new Promise( (resolve, reject) => {
+        gmailTransporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+                return console.log(error);
+            }
+            console.log('Message sent: %s', info.messageId);
+            resolve('Message sent: %s', info.messageId);
+        });
+    });
+}
+
+
+sendEmail()
+.then(sent => console.log('sent'))
+.catch(err => console.log(err));
