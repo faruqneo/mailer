@@ -33,44 +33,32 @@ app.post('/send',function(req, res){
     <p>Name: ${req.body.name}</p>
     <p>Email: ${req.body.email}</p>
     <p>Message: ${req.body.message}</p>`;
+     console.log(process.env.PASS)
 
+    let transporter = nodemailer.createTransport({
+        service: "gmail",
+        host: "smtp.gmail.com",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASS
+        }
+      });
 
-            // create reusable transporter object using the default SMTP transport
-        let transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true, // true for 465, false for other ports
-            auth: {
-            user: process.env.EMAIL, // generated ethereal user
-            pass: process.env.PASS // generated ethereal password
-            },
-            tls:{
-                rejectUnathorized: false
-            }
-        });
+      let mailOptions = {
+        from: process.env.EMAIL, 
+        to: process.env.EMAIL, 
+        subject: "Hello ✔", 
+        text: "Hello world?", 
+        html: output 
+      };
 
-        // setup email data with unicode symbols
-        let mailOptions = {
-            from: '"Nodemailer contact" <faruq.cvrp@gmail.com>', // sender address
-            to: "faruq.cvrp@gmail.com", // list of receivers
-            subject: "Hello ✔", // Subject line
-            text: "Hello world?", // plain text body
-            html: output // html body
-        };
-
-        // send mail with defined transport object
-        transporter.sendMail(mailOptions, function(error, info){
-            if(error){
-            return false;
-            }
-
-        console.log("Message sent: %s", info.messageId);
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-        res.render('index',{
-            msg: "Email has been sent"
-        });
-
-        });
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+    });
 });
 
 app.listen(3000, function(){
