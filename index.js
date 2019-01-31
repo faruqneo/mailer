@@ -33,14 +33,19 @@ app.post('/send',function(req, res){
     <p>Name: ${req.body.name}</p>
     <p>Email: ${req.body.email}</p>
     <p>Message: ${req.body.message}</p>`;
-     console.log(process.env.PASS)
+     //console.log(process.env.PASS)
 
     let transporter = nodemailer.createTransport({
-        service: "gmail",
+        port: 587,
+        secure: true,
         host: "smtp.gmail.com",
         auth: {
+          type: 'OAuth2',
           user: process.env.EMAIL,
-          pass: process.env.PASS
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          auth_uri: process.env.auth_uri,
+          token_uri: process.env.token_uri 
         }
       });
 
