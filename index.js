@@ -36,7 +36,7 @@ app.post('/send',function(req, res){
      //console.log(process.env.PASS)
 
     let transporter = nodemailer.createTransport({
-        port: 587,
+        port: 465,
         secure: true,
         host: "smtp.gmail.com",
         auth: {
@@ -45,8 +45,9 @@ app.post('/send',function(req, res){
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
           auth_uri: process.env.auth_uri,
-          token_uri: process.env.token_uri 
-        }
+          token_uri: process.env.token_uri,
+          auth_provider_x509_cert_url: process.env.auth_provider_x509_cert_url 
+        },tls: { rejectUnauthorized: false }
       });
 
       let mailOptions = {
@@ -54,7 +55,10 @@ app.post('/send',function(req, res){
         to: process.env.EMAIL, 
         subject: "Hello ✔", 
         text: "Hello world?", 
-        html: output 
+        html: output,
+        auth: {
+            user: process.env.EMAIL
+        }
       };
 
       transporter.sendMail(mailOptions, function(error, info){
